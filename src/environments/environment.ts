@@ -3,8 +3,11 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  production: false
+  production: false,
+  baseUrl: 'https://api.nasa.gov/neo/rest/v1/neo',
+  apiKey: 'DEMO_KEY'
 };
+
 
 /*
  * For easier debugging in development mode, you can import the following file
