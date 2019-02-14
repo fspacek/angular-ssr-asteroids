@@ -1,6 +1,6 @@
-# SsrAsteroids
+# Simple Near Earth Objects Database Application
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 7.3.1.
+Project uses https://api.nasa.gov/api.html#NeoWS to demostrate data rendering with angular universal.
 
 ## Development server
 
