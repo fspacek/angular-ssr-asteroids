@@ -5,13 +5,16 @@ import { AsteroidsService } from './asteroids.service';
 import { CollectionViewer } from '@angular/cdk/collections';
 import { AsteroidsPage } from './model/asteroid-page.model';
 import { catchError, finalize, map } from 'rxjs/operators';
+import { HttpErrorResponse } from '@angular/common/http';
 
 export class AsteroidsDataSource implements DataSource<Asteroid> {
 
     private asteroidsSubject = new BehaviorSubject<Asteroid[]>([]);
     private loadingSubject = new BehaviorSubject<boolean>(false);
+    private loadingErrorSubject = new BehaviorSubject<HttpErrorResponse>(null);
 
     public loading$ = this.loadingSubject.asObservable();
+    public loadingError$ = this.loadingErrorSubject.asObservable();
 
     private _totalElements = 0;
 
@@ -31,7 +34,7 @@ export class AsteroidsDataSource implements DataSource<Asteroid> {
 
         this.asteroidsService.getAll(pageIndex, pageSize)
             .pipe(
-                catchError((err) => { console.log(err); return of([]); }),
+                catchError((err) => this.handleError(err)),
                 finalize(() => this.loadingSubject.next(false)))
             .pipe(map((res: AsteroidsPage) => {
                 if (res.near_earth_objects) {
@@ -45,5 +48,11 @@ export class AsteroidsDataSource implements DataSource<Asteroid> {
 
     get totalElements() {
         return this._totalElements;
+    }
+
+    private handleError(err) {
+        console.log(err);
+        this.loadingErrorSubject.next(err);
+        return of([]);
     }
 }

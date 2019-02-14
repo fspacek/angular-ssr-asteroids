@@ -3,37 +3,39 @@
     <mat-spinner></mat-spinner>
   </div>
 
+  <div class="error">
+    <mat-error *ngIf="loadingErrorMessage">{{loadingErrorMessage}}</mat-error>
+  </div>
+
   <div class="table-container">
     <table mat-table [dataSource]="dataSource" class="table">
-      <!-- firstname Column -->
-      <ng-container matColumnDef="neo_reference_id">
-        <th mat-header-cell *matHeaderCellDef>Id</th>
-        <td mat-cell *matCellDef="let row">{{row.neo_reference_id}}</td>
-      </ng-container>
-
-      <!-- lastname Column -->
       <ng-container matColumnDef="name">
         <th mat-header-cell *matHeaderCellDef>Name</th>
         <td mat-cell *matCellDef="let row">{{row.name}}</td>
       </ng-container>
+      <ng-container matColumnDef="closeApproachDate">
+        <th mat-header-cell *matHeaderCellDef>Close Approach Date</th>
+        <td mat-cell *matCellDef="let row">{{closeApproachDate(row)}}</td>
+      </ng-container>
 
-      <!-- email column -->
-      <ng-container matColumnDef="designation">
-        <th mat-header-cell *matHeaderCellDef>Designation</th>
-        <td mat-cell *matCellDef="let row">{{row.designation}}</td>
+      <ng-container matColumnDef="missDistance">
+        <th mat-header-cell *matHeaderCellDef>Miss Distance</th>
+        <td mat-cell *matCellDef="let row">{{missDistance(row)}}</td>
       </ng-container>
-      <ng-container matColumnDef="nasa_jpl_url">
-        <th mat-header-cell *matHeaderCellDef>JPL Url</th>
-        <td mat-cell *matCellDef="let row"><a [href]="row.nasa_jpl_url">Link</a></td>
-      </ng-container>
-      <ng-container matColumnDef="absolute_magnitude_h">
-        <th mat-header-cell *matHeaderCellDef>Absolute Magnitude</th>
-        <td mat-cell *matCellDef="let row">{{row.absolute_magnitude_h}}</td>
-      </ng-container>
-      <ng-container matColumnDef="is_potentially_hazardous_asteroid">
+      <ng-container matColumnDef="hazardous">
         <th mat-header-cell *matHeaderCellDef>Potentially Hazardous</th>
-        <td mat-cell *matCellDef="let row">{{row.is_potentially_hazardous_asteroid}}</td>
+        <td mat-cell *matCellDef="let row">
+          <mat-icon *ngIf="row.is_potentially_hazardous_asteroid">warning</mat-icon>
+        </td>
       </ng-container>
+
+      <ng-container matColumnDef="detailsLink">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let row"><a mat-button [href]="row.nasa_jpl_url" target="_blank">
+            <mat-icon>open_in_new</mat-icon>
+          </a></td>
+      </ng-container>
+
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
       <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
     </table>

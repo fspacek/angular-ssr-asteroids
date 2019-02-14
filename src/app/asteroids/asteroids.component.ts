@@ -1,9 +1,11 @@
 import { Component, OnInit, OnDestroy, AfterViewInit, ViewChild } from '@angular/core';
 import { AsteroidsDataSource } from './asteroids.datasource';
 import { Subscription } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { tap, map } from 'rxjs/operators';
 import { MatPaginator } from '@angular/material';
 import { AsteroidsService } from './asteroids.service';
+import { Asteroid } from './model/asteroid.model';
+import { DatePipe, DecimalPipe } from '@angular/common';
 
 @Component({
   selector: 'app-asteroids',
@@ -11,18 +13,23 @@ import { AsteroidsService } from './asteroids.service';
   styleUrls: ['./asteroids.component.css']
 })
 export class AsteroidsComponent implements OnInit, AfterViewInit, OnDestroy {
-  displayedColumns: string[] = ['neo_reference_id', 'name', 'designation', 'nasa_jpl_url', 'absolute_magnitude_h',
-    'is_potentially_hazardous_asteroid'];
+  displayedColumns: string[] = ['name', 'closeApproachDate', 'missDistance', 'hazardous', 'detailsLink'];
   dataSource: AsteroidsDataSource;
 
   pageSubscription: Subscription;
+  loadingErrorMessage: string;
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
-  constructor(private asteroidsService: AsteroidsService) {
+  constructor(private asteroidsService: AsteroidsService, private datePipe: DatePipe, private decimalPipe: DecimalPipe) {
   }
 
   ngOnInit() {
     this.dataSource = new AsteroidsDataSource(this.asteroidsService);
+    this.dataSource.loadAsteroids(0, 10);
+
+    this.dataSource.loadingError$
+      .pipe(map(e => this.loadingErrorMessage = e != null ? e.error.error.message : null))
+      .subscribe();
   }
 
   ngAfterViewInit() {
@@ -38,7 +45,22 @@ export class AsteroidsComponent implements OnInit, AfterViewInit, OnDestroy {
       this.pageSubscription.unsubscribe();
     }
   }
+
   loadAsteroidsPage() {
     this.dataSource.loadAsteroids(this.paginator.pageIndex, this.paginator.pageSize);
+  }
+
+  closeApproachDate(row: Asteroid): string {
+    return this.hasCloseApproachData(row) ? this.datePipe.transform(row.close_approach_data[0].close_approach_date) : 'N/A';
+  }
+
+  missDistance(row: Asteroid): string {
+    return this.hasCloseApproachData(row)
+      ? `${this.decimalPipe.transform(row.close_approach_data[0].miss_distance.kilometers)} Km`
+      : 'N/A';
+  }
+
+  private hasCloseApproachData(row: Asteroid) {
+    return row.close_approach_data && row.close_approach_data.length > 0;
   }
 }

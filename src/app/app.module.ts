@@ -6,6 +6,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MaterialModule } from './material.module';
 import { AsteroidsComponent } from './asteroids/asteroids.component';
 import { HttpClientModule } from '@angular/common/http';
+import { DatePipe, DecimalPipe } from '@angular/common';
 
 @NgModule({
   declarations: [
@@ -18,7 +19,7 @@ import { HttpClientModule } from '@angular/common/http';
     MaterialModule,
     HttpClientModule
   ],
-  providers: [],
+  providers: [DatePipe, DecimalPipe],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
